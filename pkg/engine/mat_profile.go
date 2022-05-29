@@ -1,0 +1,104 @@
+//go:build matprofile
+// +build matprofile
+
+package engine
+
+// Copyright (c) 2018 Bhojpur Consulting Private Limited, India. All rights reserved.
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+/*
+#include <stdlib.h>
+#include "core.h"
+*/
+import (
+	"C"
+)
+
+import (
+	"runtime/pprof"
+)
+
+// MatProfile a pprof.Profile that contains stack traces that led to (currently)
+// unclosed Mat's creations.  Every time a Mat is created, the stack trace is
+// added to this profile and every time the Mat is closed the trace is removed.
+// In a program that is not leaking, this profile's count should not
+// continuously increase and ideally when a program is terminated the count
+// should be zero.  You can get the count at any time with:
+//
+//	engine.MatProfile.Count()
+//
+// and you can display the current entries with:
+//
+// 	var b bytes.Buffer
+//	engine.MatProfile.WriteTo(&b, 1)
+//	fmt.Print(b.String())
+//
+// This will display stack traces of where the unclosed Mats were instantiated.
+// For example, the results could look something like this:
+//
+//	1 @ 0x4146a0c 0x4146a57 0x4119666 0x40bb18f 0x405a841
+//	#	0x4146a0b	github.com/bhojpur/vision/pkg/engine.newMat+0x4b	/go/src/github.com/bhojpur/vision/pkg/engine/core.go:120
+//	#	0x4146a56	github.com/bhojpur/vision/pkg/engine.NewMat+0x26	/go/src/github.com/bhojpur/vision/pkg/engine/core.go:126
+//	#	0x4119665	github.com/bhojpur/vision/pkg/engine.TestMat+0x25	/go/src/github.com/bhojpur/vision/pkg/engine/core_test.go:29
+//	#	0x40bb18e	testing.tRunner+0xbe		/usr/local/Cellar/go/1.11/libexec/src/testing/testing.go:827
+//
+// Furthermore, if the program is a long running process or if Bhojpur Vision is being used on a
+// web server, it may be helpful to install the HTTP interface using:
+//
+//	import _ "net/http/pprof"
+//
+// In order to include the MatProfile custom profiler, you MUST build or run your application
+// or tests using the following build tag:
+// -tags matprofile
+//
+// For more information, see the runtime/pprof package documentation.
+var MatProfile *pprof.Profile
+
+func init() {
+	profName := "github.com/bhojpur/vision/pkg/engine.Mat"
+	MatProfile = pprof.Lookup(profName)
+	if MatProfile == nil {
+		MatProfile = pprof.NewProfile(profName)
+	}
+}
+
+// addMatToProfile records Mat to the MatProfile.
+func addMatToProfile(p C.Mat) {
+	MatProfile.Add(p, 1)
+	return
+}
+
+// newMat returns a new Mat from a C Mat and records it to the MatProfile.
+func newMat(p C.Mat) Mat {
+	m := Mat{p: p}
+	MatProfile.Add(p, 1)
+	return m
+}
+
+// Close the Mat object.
+func (m *Mat) Close() error {
+	// NOTE: The pointer must be removed from the profile before it is deleted to
+	// avoid a data race.
+	MatProfile.Remove(m.p)
+	C.Mat_Close(m.p)
+	m.p = nil
+	m.d = nil
+	return nil
+}

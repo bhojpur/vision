@@ -1,2 +1,5 @@
-# vision
-The Bhojpur Vision is a software-as-a-service product used as a Vision Engine based on Bhojpur.NET Platform for application delivery.
+# Bhojpur Vision - Processing Engine
+
+The `Bhojpur Vision` is an advanced visual data processing engine applied within the
+[Bhojpur.NET Platform](https://github.com/bhojpur/platform/) for delivery of intelligent
+`applications` or `services`.
