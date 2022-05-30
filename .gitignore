@@ -27,3 +27,5 @@ count.out
 /stage
 /build
 contrib/data.yaml
+pkg/data/yolov5
+reports
