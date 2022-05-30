@@ -1,3 +1,5 @@
+#!/bin/sh
+
 # Copyright (c) 2018 Bhojpur Consulting Private Limited, India. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,6 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-mkdir -p ./pkg/data/yolov5
-wget https://github.com/doleron/yolov5-opencv-cpp-python/raw/main/config_files/yolov5s.onnx -O ./pkg/data/yolov5/yolov5s.onnx
-wget https://github.com/pjreddie/darknet/blob/master/data/coco.names?raw=true -O ./pkg/data/yolov5/coco.names
+docker run -it \
+    --user $(id -u) \
+    -e DISPLAY=unix$DISPLAY \
+    --workdir=$(pwd) \
+    --volume="/home/$USER:/home/$USER" \
+    --volume="/etc/group:/etc/group:ro" \
+    --volume="/etc/passwd:/etc/passwd:ro" \
+    --volume="/etc/shadow:/etc/shadow:ro" \
+    --volume="/etc/sudoers.d:/etc/sudoers.d:ro" \
+    -v /tmp/.X11-unix:/tmp/.X11-unix \
+    bhojpur/py2qt4

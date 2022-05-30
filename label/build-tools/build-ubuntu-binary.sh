@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Copyright (c) 2018 Bhojpur Consulting Private Limited, India. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,6 +20,26 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-mkdir -p ./pkg/data/yolov5
-wget https://github.com/doleron/yolov5-opencv-cpp-python/raw/main/config_files/yolov5s.onnx -O ./pkg/data/yolov5/yolov5s.onnx
-wget https://github.com/pjreddie/darknet/blob/master/data/coco.names?raw=true -O ./pkg/data/yolov5/coco.names
+### Ubuntu use pyinstall v3.0
+THIS_SCRIPT_PATH=`readlink -f $0`
+THIS_SCRIPT_DIR=`dirname ${THIS_SCRIPT_PATH}`
+cd pyinstaller
+git checkout v3.2
+cd ${THIS_SCRIPT_DIR}
+
+rm -r build
+rm -r dist
+rm visionlab.spec
+python pyinstaller/pyinstaller.py --hidden-import=xml \
+            --hidden-import=xml.etree \
+            --hidden-import=xml.etree.ElementTree \
+            --hidden-import=lxml.etree \
+             -D -F -n visionlab -c "../visionlab.py" -p ../libs -p ../
+
+FOLDER=$(git describe --abbrev=0 --tags)
+FOLDER="linux_"$FOLDER
+rm -rf "$FOLDER"
+mkdir "$FOLDER"
+cp dist/visionlab $FOLDER
+cp -rf ../data $FOLDER/data
+zip "$FOLDER.zip" -r $FOLDER

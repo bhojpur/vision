@@ -18,6 +18,20 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-mkdir -p ./pkg/data/yolov5
-wget https://github.com/doleron/yolov5-opencv-cpp-python/raw/main/config_files/yolov5s.onnx -O ./pkg/data/yolov5/yolov5s.onnx
-wget https://github.com/pjreddie/darknet/blob/master/data/coco.names?raw=true -O ./pkg/data/yolov5/coco.names
+import sys
+from libs.constants import DEFAULT_ENCODING
+
+def ustr(x):
+    """py2/py3 unicode helper"""
+
+    if sys.version_info < (3, 0, 0):
+        from PyQt4.QtCore import QString
+        if type(x) == str:
+            return x.decode(DEFAULT_ENCODING)
+        if type(x) == QString:
+            # https://blog.csdn.net/friendan/article/details/51088476
+            # https://blog.csdn.net/xxm524/article/details/74937308
+            return unicode(x.toUtf8(), DEFAULT_ENCODING, 'ignore')
+        return x
+    else:
+        return x

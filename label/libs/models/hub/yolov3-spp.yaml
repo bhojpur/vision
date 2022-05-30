@@ -1,0 +1,71 @@
+# Copyright (c) 2018 Bhojpur Consulting Private Limited, India. All rights reserved.
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
+# parameters
+nc: 80  # number of classes
+depth_multiple: 1.0  # model depth multiple
+width_multiple: 1.0  # layer channel multiple
+
+# anchors
+anchors:
+  - [10,13, 16,30, 33,23]  # P3/8
+  - [30,61, 62,45, 59,119]  # P4/16
+  - [116,90, 156,198, 373,326]  # P5/32
+
+# darknet53 backbone
+backbone:
+  # [from, number, module, args]
+  [[-1, 1, Conv, [32, 3, 1]],  # 0
+   [-1, 1, Conv, [64, 3, 2]],  # 1-P1/2
+   [-1, 1, Bottleneck, [64]],
+   [-1, 1, Conv, [128, 3, 2]],  # 3-P2/4
+   [-1, 2, Bottleneck, [128]],
+   [-1, 1, Conv, [256, 3, 2]],  # 5-P3/8
+   [-1, 8, Bottleneck, [256]],
+   [-1, 1, Conv, [512, 3, 2]],  # 7-P4/16
+   [-1, 8, Bottleneck, [512]],
+   [-1, 1, Conv, [1024, 3, 2]],  # 9-P5/32
+   [-1, 4, Bottleneck, [1024]],  # 10
+  ]
+
+# YOLOv3-SPP head
+head:
+  [[-1, 1, Bottleneck, [1024, False]],
+   [-1, 1, SPP, [512, [5, 9, 13]]],
+   [-1, 1, Conv, [1024, 3, 1]],
+   [-1, 1, Conv, [512, 1, 1]],
+   [-1, 1, Conv, [1024, 3, 1]],  # 15 (P5/32-large)
+
+   [-2, 1, Conv, [256, 1, 1]],
+   [-1, 1, nn.Upsample, [None, 2, 'nearest']],
+   [[-1, 8], 1, Concat, [1]],  # cat backbone P4
+   [-1, 1, Bottleneck, [512, False]],
+   [-1, 1, Bottleneck, [512, False]],
+   [-1, 1, Conv, [256, 1, 1]],
+   [-1, 1, Conv, [512, 3, 1]],  # 22 (P4/16-medium)
+
+   [-2, 1, Conv, [128, 1, 1]],
+   [-1, 1, nn.Upsample, [None, 2, 'nearest']],
+   [[-1, 6], 1, Concat, [1]],  # cat backbone P3
+   [-1, 1, Bottleneck, [256, False]],
+   [-1, 2, Bottleneck, [256, False]],  # 27 (P3/8-small)
+
+   [[27, 22, 15], 1, Detect, [nc, anchors]],   # Detect(P3, P4, P5)
+  ]

@@ -17,7 +17,9 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-
-mkdir -p ./pkg/data/yolov5
-wget https://github.com/doleron/yolov5-opencv-cpp-python/raw/main/config_files/yolov5s.onnx -O ./pkg/data/yolov5/yolov5s.onnx
-wget https://github.com/pjreddie/darknet/blob/master/data/coco.names?raw=true -O ./pkg/data/yolov5/coco.names
+#
+# add these requirements in your app on top of the existing ones
+#
+pip==18.1
+Flask==1.0.2
+gunicorn==19.9.0

@@ -18,6 +18,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-mkdir -p ./pkg/data/yolov5
-wget https://github.com/doleron/yolov5-opencv-cpp-python/raw/main/config_files/yolov5s.onnx -O ./pkg/data/yolov5/yolov5s.onnx
-wget https://github.com/pjreddie/darknet/blob/master/data/coco.names?raw=true -O ./pkg/data/yolov5/coco.names
+"""Perform test request"""
+import pprint
+
+import requests
+
+DETECTION_URL = "http://localhost:5000/v1/object-detection/yolov5s"
+TEST_IMAGE = "zidane.jpg"
+
+image_data = open(TEST_IMAGE, "rb").read()
+
+response = requests.post(DETECTION_URL, files={"image": image_data}).json()
+
+pprint.pprint(response)

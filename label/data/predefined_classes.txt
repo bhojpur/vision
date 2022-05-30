@@ -1,0 +1,40 @@
+antibiotic
+cell wall
+chromosome
+chromatin
+centriole
+centrosome
+chloroplast
+cisterna
+cytoplasm
+cytoskeleton
+cytosol
+enzyme
+epithelial
+fiber
+filament
+flagellum
+golgi apparatus
+granule
+hydrolysis
+lamina
+lumen
+lysosome
+macrophage
+mitochondrion
+monomer
+mycoplasma
+nucleolus
+nucleon
+nucleus
+organelle
+phospholipid
+plasma membrane
+plastid
+polypeptide
+ribosome
+secretion
+setophaga
+tubule
+vacuole
+vesicle

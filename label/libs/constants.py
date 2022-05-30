@@ -18,6 +18,23 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-mkdir -p ./pkg/data/yolov5
-wget https://github.com/doleron/yolov5-opencv-cpp-python/raw/main/config_files/yolov5s.onnx -O ./pkg/data/yolov5/yolov5s.onnx
-wget https://github.com/pjreddie/darknet/blob/master/data/coco.names?raw=true -O ./pkg/data/yolov5/coco.names
+SETTING_FILENAME = 'filename'
+SETTING_RECENT_FILES = 'recentFiles'
+SETTING_WIN_SIZE = 'window/size'
+SETTING_WIN_POSE = 'window/position'
+SETTING_WIN_GEOMETRY = 'window/geometry'
+SETTING_LINE_COLOR = 'line/color'
+SETTING_FILL_COLOR = 'fill/color'
+SETTING_ADVANCE_MODE = 'advanced'
+SETTING_WIN_STATE = 'window/state'
+SETTING_SAVE_DIR = 'savedir'
+SETTING_PAINT_LABEL = 'paintlabel'
+SETTING_LAST_OPEN_DIR = 'lastOpenDir'
+SETTING_AUTO_SAVE = 'autosave'
+SETTING_SINGLE_CLASS = 'singleclass'
+FORMAT_PASCALVOC='PascalVOC'
+FORMAT_YOLO='YOLO'
+FORMAT_CREATEML='CreateML'
+SETTING_DRAW_SQUARE = 'draw/square'
+SETTING_LABEL_FILE_FORMAT= 'labelFileFormat'
+DEFAULT_ENCODING = 'utf-8'

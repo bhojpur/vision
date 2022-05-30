@@ -35,3 +35,21 @@ Please run the following commands to download sample object detection models.
 go run ./internal/image/main.go
 go run ./internal/webcam/main.go
 ```
+
+## Model Annotation Application
+
+Firstly, install the `Qt5` and `libxml2` dependencies
+
+```bash
+cd label
+brew install qt
+brew install libxml2
+```
+
+then, you can run the following commands to launch the `Model Annotation` application
+
+```bash
+pip3 install -r requirements.txt
+make qt5py3
+python3 visionlab.py
+```

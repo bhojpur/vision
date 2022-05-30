@@ -18,6 +18,27 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-mkdir -p ./pkg/data/yolov5
-wget https://github.com/doleron/yolov5-opencv-cpp-python/raw/main/config_files/yolov5s.onnx -O ./pkg/data/yolov5/yolov5s.onnx
-wget https://github.com/pjreddie/darknet/blob/master/data/coco.names?raw=true -O ./pkg/data/yolov5/coco.names
+import sys
+try:
+    from PyQt5.QtWidgets import QWidget, QHBoxLayout, QComboBox
+except ImportError:
+    # needed for py3+qt4
+    if sys.version_info.major >= 3:
+        import sip
+        sip.setapi('QVariant', 2)
+    from PyQt4.QtGui import QWidget, QHBoxLayout, QComboBox
+
+
+class DefaultLabelComboBox(QWidget):
+    def __init__(self, parent=None, items=[]):
+        super(DefaultLabelComboBox, self).__init__(parent)
+
+        layout = QHBoxLayout()
+        self.cb = QComboBox()
+        self.items = items
+        self.cb.addItems(self.items)
+
+        self.cb.currentIndexChanged.connect(parent.default_label_combo_selection_changed)
+
+        layout.addWidget(self.cb)
+        self.setLayout(layout)

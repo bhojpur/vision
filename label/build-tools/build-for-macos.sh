@@ -1,3 +1,5 @@
+#!/bin/sh
+
 # Copyright (c) 2018 Bhojpur Consulting Private Limited, India. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,6 +20,31 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-mkdir -p ./pkg/data/yolov5
-wget https://github.com/doleron/yolov5-opencv-cpp-python/raw/main/config_files/yolov5s.onnx -O ./pkg/data/yolov5/yolov5s.onnx
-wget https://github.com/pjreddie/darknet/blob/master/data/coco.names?raw=true -O ./pkg/data/yolov5/coco.names
+brew install python@2
+pip install --upgrade virtualenv
+
+# clone Bhojpur Vision source
+rm -rf /tmp/bhojpurSetup
+mkdir /tmp/bhojpurSetup
+cd /tmp/bhojpurSetup
+curl https://codeload.github.com/bhojpur/vision/zip/master --output bhojpur.zip
+unzip bhojpur.zip
+rm bhojpur.zip
+
+# setup python3 space
+virtualenv --system-site-packages  -p python3 /tmp/bhojpurSetup/visionlab-py3
+source /tmp/bhojpurSetup/visionlab-py3/bin/activate
+cd visionlab-master
+
+# build Bhojpur Vision app
+pip install py2app
+pip install PyQt5 lxml
+make qt5py3
+rm -rf build dist
+python setup.py py2app -A
+mv "/tmp/bhojpurSetup/visionlab-master/dist/visionlab.app" /Applications
+# deactivate python3
+deactivate
+cd ../
+rm -rf /tmp/bhojpurSetup
+echo 'DONE'

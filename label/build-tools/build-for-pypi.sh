@@ -1,3 +1,5 @@
+#!/bin/sh
+
 # Copyright (c) 2018 Bhojpur Consulting Private Limited, India. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,6 +20,19 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-mkdir -p ./pkg/data/yolov5
-wget https://github.com/doleron/yolov5-opencv-cpp-python/raw/main/config_files/yolov5s.onnx -O ./pkg/data/yolov5/yolov5s.onnx
-wget https://github.com/pjreddie/darknet/blob/master/data/coco.names?raw=true -O ./pkg/data/yolov5/coco.names
+# Packaging and Release
+docker run --workdir=$(pwd)/ --volume="/home/$USER:/home/$USER" bhojpur/py2qt4 /bin/sh -c 'make qt4py2; make test;sudo python setup.py sdist;sudo python setup.py install'
+
+while true; do
+    read -p "Do you wish to deploy this to PyPI(twine upload dist/* or pip install dist/*)?" yn
+    case $yn in
+        [Yy]* ) docker run -it --rm --workdir=$(pwd)/ --volume="/home/$USER:/home/$USER" bhojpur/py2qt4; break;;
+        [Nn]* ) exit;;
+        * ) echo "Please answer yes or no.";;
+    esac
+done
+# python setup.py register
+# python setup.py sdist upload
+# Net pypi: twine upload dist/*
+
+# Test before upladoing: pip install dist/visionlab.tar.gz
